@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs
+/packages
+/BookingService/bin
+/BookingService/obj/Debug
+*.user

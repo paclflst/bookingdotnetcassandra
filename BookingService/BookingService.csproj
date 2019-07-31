@@ -148,6 +148,7 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\HotelController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="DAO\CassandraDAO.cs" />
     <Compile Include="DAO\HotelDAO.cs" />
@@ -157,6 +158,9 @@
     </Compile>
     <Compile Include="Helper_Code\Inherit\InheritHelper.cs" />
     <Compile Include="Helper_Code\OAuth2\AppOAuthProvider.cs" />
+    <Compile Include="Helper_Code\Validation\ReturnBadRequestOnModelError.cs" />
+    <Compile Include="Helper_Code\Validation\ValidateActionParametersAttribute.cs" />
+    <Compile Include="Models\BookingBindingModels.cs" />
     <Compile Include="Models\HotelModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoginByUsernamePassword_Result.cs" />
