@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookingService.Models
 {
-    public abstract class Booking
+    public abstract class BookingBindingModel
     {
         [Required]
         public DateTime StartReserveTime { get; set; }
@@ -12,7 +12,7 @@ namespace BookingService.Models
         public DateTime EndReserveTime { get; set; }
     }
 
-    public class BookingByHotel : Booking
+    public class BookingByHotelBindingModel : BookingBindingModel
     {
         [Required]
         [JsonProperty("hotel_id")]
@@ -20,10 +20,48 @@ namespace BookingService.Models
         public string Type { get; set; }
     }
 
-    public class BookingByGuestByHotel : BookingByHotel
+    public class BookingByGuestByHotelBindingModel : BookingByHotelBindingModel
     {
         [Required]
         [JsonProperty("guest_id")]
         public Guid? GuestId { get; set; }
+    }
+
+    public class CityBindingModel
+    {
+        [Required]
+        public string City { get; set; }
+    }
+
+    public class HotelBindingModel
+    {
+        [Required]
+        public string Name { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
+        [Required]
+        public string City { get; set; }
+        public string State { get; set; }
+        public string Zip { get; set; }
+    }
+
+    public class GuestBindingModel
+    {
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+    }
+
+    public class RoomBindingModel
+    {
+        [Required]
+        [JsonProperty("hotel_id")]
+        public Guid HotelId { get; set; }
+        [Required]
+        public string Number { get; set; }
+        [Required]
+        public string Type { get; set; }
     }
 }

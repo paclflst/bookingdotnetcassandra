@@ -33,32 +33,46 @@ namespace BookingService.Controllers
 
         [HttpPost]
         [ActionName("Index")]
-        public async Task<IEnumerable<HotelModels>> IndexPost([FromBody]City city)
+        public async Task<IEnumerable<HotelModels>> IndexPost([FromBody]CityBindingModel city)
         {
-            IEnumerable<HotelModels> hotels = await hotelDAO.GetHotelByCityOLD(city.Name);
+            IEnumerable<HotelModels> hotels = await hotelDAO.GetHotelByCityOLD(city.City);
             return hotels;
         }
 
         [HttpPost]
-        [ActionName("City")]
-        public async Task<IEnumerable<Hotel>> GetHotelByCity([FromBody]City city)
+        [ActionName("getcity")]
+        public async Task<IEnumerable<Hotel>> GetHotelByCity([FromBody]CityBindingModel city)
         {
-            IEnumerable<Hotel> hotels = await hotelDAO.GetHotelByCity(city.Name);
+            IEnumerable<Hotel> hotels = await hotelDAO.GetHotelByCityAsync(city.City);
             return hotels;
         }
 
         [HttpPost]
         [ActionName("Add")]
-        public async Task<IEnumerable<Hotel>> AddHotel([FromBody][Required]HotelInfo hotel)
+        public async Task<IEnumerable<Hotel>> AddHotel([FromBody][Required]HotelBindingModel hotel)
         {
-            return await hotelDAO.AddHotel(hotel);
+            HotelInfo hotelInfo = new HotelInfo()
+            {
+                Name = hotel.Name,
+                Phone = hotel.Phone,
+                Address = hotel.Address,
+                City = hotel.City,
+                State = hotel.State,
+                Zip = hotel.Zip,
+            };
+            return await hotelDAO.AddHotelAsync(hotelInfo);
         }
 
         [HttpPost]
         [ActionName("AddGuest")]
-        public async Task AddGuest([FromBody][Required]GuestInfo guest)
+        public async Task AddGuest([FromBody][Required]GuestBindingModel guest)
         {
-            await hotelDAO.AddGuestAsync(guest);
+            GuestInfo guestInfo = new GuestInfo()
+            {
+                Name = guest.Email,
+                Email = guest.Email
+            };
+            await hotelDAO.AddGuestAsync(guestInfo);
         }
 
         [HttpPost]
@@ -70,7 +84,7 @@ namespace BookingService.Controllers
 
         [HttpPost]
         [ActionName("GetFreeRooms")]
-        public async Task<IEnumerable<Room>> GetFreeRooms([FromBody][Required]BookingByHotel bookingQuery)
+        public async Task<IEnumerable<Room>> GetFreeRooms([FromBody][Required]BookingByHotelBindingModel bookingQuery)
         {
             return await hotelDAO.GetFreeRoomByHotelIdByBookingPeriodAsync(bookingQuery);
         }
@@ -84,7 +98,7 @@ namespace BookingService.Controllers
 
         [HttpPost]
         [ActionName("AddBooking")]
-        public async Task AddBookingAsync([FromBody][Required]BookingByGuestByHotel bookingQuery)
+        public async Task AddBookingAsync([FromBody][Required]BookingByGuestByHotelBindingModel bookingQuery)
         {
             await hotelDAO.AddBookingAsync(bookingQuery);
         }

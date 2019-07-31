@@ -17,7 +17,7 @@ namespace BookingService.Models
         [Column("hotel")]
         public string Hotel { get; set; }
     }
-
+    
     public class HotelInfo
     {
         [Required]
@@ -67,7 +67,6 @@ namespace BookingService.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        [EmailAddress]
         public string Email { get; set; }
     }
 
@@ -88,9 +87,8 @@ namespace BookingService.Models
 
     public class RoomInfo
     {
-        //[Required]
+        [Required]
         [Column("hotel_id")]
-        [JsonProperty("hotel_id")]
         public Guid HotelId { get; set; }
         [Required]
         public string Number { get; set; }
@@ -143,13 +141,6 @@ namespace BookingService.Models
             StartReserveTime = startReserveTime;
             EndReserveTime = endReserveTime;
         }
-    }
-
-    public class City
-    {
-        [Required]
-        [JsonProperty("city")]
-        public string Name { get; set; }
     }
 
     public class BookingByHotelQuery

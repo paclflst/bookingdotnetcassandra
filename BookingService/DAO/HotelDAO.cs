@@ -14,13 +14,13 @@ namespace BookingService.DAO
     {
         Task<IEnumerable<HotelModels>> GetHotel();
         Task<IEnumerable<HotelModels>> GetHotelByCityOLD(string city);
-        Task<IEnumerable<Hotel>> GetHotelByCity(string city);
-        Task<IEnumerable<Hotel>> AddHotel(HotelInfo hotel);
+        Task<IEnumerable<Hotel>> GetHotelByCityAsync(string city);
+        Task<IEnumerable<Hotel>> AddHotelAsync(HotelInfo hotel);
         Task AddGuestAsync(GuestInfo guestInfo);
         Task AddRoomAsync(RoomInfo roomInfo);
-        Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(BookingByHotel bookingQuery);
+        Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(BookingByHotelBindingModel bookingQuery);
         Task<IEnumerable<Room>> GetBookingByGuestAsync(BookingByGuestQuery bookingQuery);
-        Task AddBookingAsync(BookingByGuestByHotel bookingQuery);
+        Task AddBookingAsync(BookingByGuestByHotelBindingModel bookingQuery);
     }
 
     public class HotelDAO : IHotelDAO
@@ -54,7 +54,7 @@ namespace BookingService.DAO
             return await mapper.FetchAsync<HotelModels>("SELECT * FROM booking.hotel_by_cityOLD WHERE city = ?", city);
         }
 
-        public async Task<IEnumerable<Hotel>> GetHotelByCity(string city)
+        public async Task<IEnumerable<Hotel>> GetHotelByCityAsync(string city)
         {
             return await mapper.FetchAsync<Hotel>(@"SELECT 
                     hotel_id as id, 
@@ -67,9 +67,9 @@ namespace BookingService.DAO
                 FROM booking.hotel_by_city WHERE city = ?;", city);
         }
 
-        public async Task<IEnumerable<Hotel>> AddHotel(HotelInfo hotelInfo)
+        public async Task<IEnumerable<Hotel>> AddHotelAsync(HotelInfo hotelInfo)
         {
-            IEnumerable<Hotel> result = await GetHotelByCity(hotelInfo.City);
+            IEnumerable<Hotel> result = await GetHotelByCityAsync(hotelInfo.City);
             List<Hotel> hotels = result.ToList();
             if (hotels.Any(h => h.Name == hotelInfo.Name))
             {
@@ -167,7 +167,7 @@ namespace BookingService.DAO
             }
         }
 
-        public async Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(BookingByHotel bookingQuery)
+        public async Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(BookingByHotelBindingModel bookingQuery)
         {
             Task<IEnumerable<Room>> getRooms = GetRoomByHotelIdAsync(bookingQuery.HotelId);
             Task<IEnumerable<RoomBookingByHotel>> getBookings = GetRoomBookingByHotelIdAsync(bookingQuery.HotelId);
@@ -202,7 +202,7 @@ namespace BookingService.DAO
                                             .ToList();
         }
 
-        public async Task AddBookingAsync(BookingByGuestByHotel bookingQuery)
+        public async Task AddBookingAsync(BookingByGuestByHotelBindingModel bookingQuery)
         {
             var result = await GetGuestByIdAsync(bookingQuery.GuestId);
             if (result.Count() < 1)
