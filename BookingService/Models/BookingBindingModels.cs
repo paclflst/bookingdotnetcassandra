@@ -22,6 +22,8 @@ namespace BookingService.Models
 
     public class BookingByGuestByHotelBindingModel : BookingByHotelBindingModel
     {
+        [JsonProperty("booking_id")]
+        public Guid? BookingId { get; set; }
         [Required]
         [JsonProperty("guest_id")]
         public Guid? GuestId { get; set; }
@@ -35,6 +37,8 @@ namespace BookingService.Models
 
     public class HotelBindingModel
     {
+        [JsonProperty("hotel_id")]
+        public Guid? HotelId { get; set; }
         [Required]
         public string Name { get; set; }
         public string Phone { get; set; }
@@ -47,6 +51,8 @@ namespace BookingService.Models
 
     public class GuestBindingModel
     {
+        [JsonProperty("guest_id")]
+        public Guid? GuestId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
@@ -56,6 +62,8 @@ namespace BookingService.Models
 
     public class RoomBindingModel
     {
+        [JsonProperty("room_id")]
+        public Guid? RoomId { get; set; }
         [Required]
         [JsonProperty("hotel_id")]
         public Guid HotelId { get; set; }

@@ -16,9 +16,19 @@ namespace BookingService
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
+                name: "GetBooking",
+                routeTemplate: "api/get/{action}/{id}",
+                defaults: new { controller = "Booking", id = RouteParameter.Optional }
+            );
+            config.Routes.MapHttpRoute(
+                name: "AddBooking",
+                routeTemplate: "api/add/{action}/{id}",
+                defaults: new { controller = "Booking", id = RouteParameter.Optional }
+            );
+            config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                defaults: new { id = RouteParameter.Optional}
             );
 
             // WebAPI when dealing with JSON & JavaScript!  

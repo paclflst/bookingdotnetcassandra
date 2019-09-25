@@ -77,16 +77,22 @@ namespace BookingService.Controllers
 
         [HttpPost]
         [ActionName("AddRoom")]
-        public async Task AddRoom([FromBody][Required]RoomInfo room)
+        public async Task AddRoom([FromBody][Required]RoomBindingModel room)
         {
-            await hotelDAO.AddRoomAsync(room);
+            var roomInfo = new RoomInfo()
+            {
+                HotelId = room.HotelId,
+                Number = room.Number,
+                Type = room.Type
+            };
+            await hotelDAO.AddRoomAsync(roomInfo);
         }
 
         [HttpPost]
         [ActionName("GetFreeRooms")]
         public async Task<IEnumerable<Room>> GetFreeRooms([FromBody][Required]BookingByHotelBindingModel bookingQuery)
         {
-            return await hotelDAO.GetFreeRoomByHotelIdByBookingPeriodAsync(bookingQuery);
+            return await hotelDAO.GetFreeRoomByHotelIdByBookingPeriodAsync(bookingQuery.HotelId, bookingQuery.StartReserveTime, bookingQuery.EndReserveTime, bookingQuery.Type);
         }
 
         [HttpPost]
@@ -100,7 +106,7 @@ namespace BookingService.Controllers
         [ActionName("AddBooking")]
         public async Task AddBookingAsync([FromBody][Required]BookingByGuestByHotelBindingModel bookingQuery)
         {
-            await hotelDAO.AddBookingAsync(bookingQuery);
+            await hotelDAO.AddBookingAsync(bookingQuery.GuestId, bookingQuery.HotelId, bookingQuery.StartReserveTime, bookingQuery.EndReserveTime, bookingQuery.Type);
         }
     }
 }

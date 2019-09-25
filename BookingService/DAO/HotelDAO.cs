@@ -18,9 +18,9 @@ namespace BookingService.DAO
         Task<IEnumerable<Hotel>> AddHotelAsync(HotelInfo hotel);
         Task AddGuestAsync(GuestInfo guestInfo);
         Task AddRoomAsync(RoomInfo roomInfo);
-        Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(BookingByHotelBindingModel bookingQuery);
+        Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(Guid? hotelId, DateTime startReserveTime, DateTime endReserveTime, string type);
         Task<IEnumerable<Room>> GetBookingByGuestAsync(BookingByGuestQuery bookingQuery);
-        Task AddBookingAsync(BookingByGuestByHotelBindingModel bookingQuery);
+        Task AddBookingAsync(Guid? guestId, Guid? hotelId, DateTime startReserveTime, DateTime endReserveTime, string type);
     }
 
     public class HotelDAO : IHotelDAO
@@ -167,24 +167,24 @@ namespace BookingService.DAO
             }
         }
 
-        public async Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(BookingByHotelBindingModel bookingQuery)
+        public async Task<IEnumerable<Room>> GetFreeRoomByHotelIdByBookingPeriodAsync(Guid? hotelId, DateTime startReserveTime, DateTime endReserveTime, string type)
         {
-            Task<IEnumerable<Room>> getRooms = GetRoomByHotelIdAsync(bookingQuery.HotelId);
-            Task<IEnumerable<RoomBookingByHotel>> getBookings = GetRoomBookingByHotelIdAsync(bookingQuery.HotelId);
+            Task<IEnumerable<Room>> getRooms = GetRoomByHotelIdAsync(hotelId);
+            Task<IEnumerable<RoomBookingByHotel>> getBookings = GetRoomBookingByHotelIdAsync(hotelId);
             await Task.WhenAll(getRooms, getBookings);
             IEnumerable<Room> roomResult = getRooms.Result;
             List<Room> rooms = roomResult.ToList();
 
             IEnumerable<RoomBookingByHotel> bookingResult = getBookings.Result;
             List<RoomBookingByHotel> bookings = bookingResult.ToList().Where(b =>
-                                                                                (b.StartReserveTime >= bookingQuery.StartReserveTime
-                                                                                && b.StartReserveTime <= bookingQuery.EndReserveTime)
-                                                                                || (b.EndReserveTime >= bookingQuery.StartReserveTime
-                                                                                && b.EndReserveTime <= bookingQuery.EndReserveTime))
+                                                                                (b.StartReserveTime >= startReserveTime
+                                                                                && b.StartReserveTime <= endReserveTime)
+                                                                                || (b.EndReserveTime >= startReserveTime
+                                                                                && b.EndReserveTime <= endReserveTime))
                                                                                 .ToList();
-            if (bookingQuery.Type != null)
+            if (type != null)
             {
-                bookings = bookings.Where(b => b.Type == bookingQuery.Type).ToList();
+                bookings = bookings.Where(b => b.Type == type).ToList();
             }
             IEnumerable<Guid> bookedRoomsIds = bookings.Select(b => b.RoomId);
             return rooms.Where(room => !bookedRoomsIds.Contains(room.Id));
@@ -202,15 +202,15 @@ namespace BookingService.DAO
                                             .ToList();
         }
 
-        public async Task AddBookingAsync(BookingByGuestByHotelBindingModel bookingQuery)
+        public async Task AddBookingAsync(Guid? guestId, Guid? hotelId, DateTime startReserveTime, DateTime endReserveTime, string type)
         {
-            var result = await GetGuestByIdAsync(bookingQuery.GuestId);
+            var result = await GetGuestByIdAsync(guestId);
             if (result.Count() < 1)
             {
                 throw new Exception("Guest does not exist");
             }
-            IEnumerable<Room> freeRooms = await GetFreeRoomByHotelIdByBookingPeriodAsync(bookingQuery);
-            RoomBookingByGuest roomToBook = new RoomBookingByGuest(bookingQuery.GuestId, freeRooms.First(), bookingQuery.StartReserveTime, bookingQuery.EndReserveTime);
+            IEnumerable<Room> freeRooms = await GetFreeRoomByHotelIdByBookingPeriodAsync(hotelId, startReserveTime, endReserveTime, type);
+            RoomBookingByGuest roomToBook = new RoomBookingByGuest(guestId, freeRooms.First(), startReserveTime, endReserveTime);
             Task.WaitAll(mapper.InsertAsync((RoomBookingByHotel)roomToBook), mapper.InsertAsync(roomToBook));
         }
 

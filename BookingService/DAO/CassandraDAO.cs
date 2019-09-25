@@ -1,4 +1,6 @@
 ﻿using Cassandra;
+using Cassandra.Mapping;
+using System.Threading.Tasks;
 
 namespace BookingService.DAO
 {
@@ -56,6 +58,11 @@ namespace BookingService.DAO
                 .Build();
 
             return cluster;
+        }
+
+        private async Task Execute<T>(Mapper mapper)
+        {
+            await mapper.FetchAsync<T>();
         }
 
         private string GetAppSetting(string key)
