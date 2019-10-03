@@ -6,6 +6,7 @@ namespace BookingService.Repository
     public class CassandraContext : IDisposable
     {
         private readonly string[] _contactPoints;
+        private readonly string _connectionString;
         private Cluster _cluster;
         private ISession _session;
 
@@ -14,9 +15,9 @@ namespace BookingService.Repository
         private object _batchLock = new object();
         private BatchStatement _currentBatch = new BatchStatement();
 
-        public CassandraContext(string[] contactPoints)
+        public CassandraContext(string connectionString)
         {
-            _contactPoints = contactPoints;
+            _connectionString = connectionString;
             SetCluster();
         }
 
@@ -52,13 +53,22 @@ namespace BookingService.Repository
             QueryOptions queryOptions = new QueryOptions()
                  .SetConsistencyLevel(ConsistencyLevel.LocalQuorum);
 
-            Cluster cluster = Cluster.Builder()
+            if (_connectionString.Length > 0)
+            {
+                Cluster cluster = Cluster.Builder()
+                    .WithConnectionString(_connectionString)
+                    .Build();
+
+                return cluster;
+            }
+
+            Cluster cluster1 = Cluster.Builder()
                 .AddContactPoints(_contactPoints)
                 //.WithCredentials(user, pwd)
                 .WithQueryOptions(queryOptions)
                 .Build();
 
-            return cluster;
+            return cluster1;
         }
 
         public void Dispose()

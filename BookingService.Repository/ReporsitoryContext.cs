@@ -9,7 +9,7 @@ namespace BookingService.Repository
 {
     public class RepositoryContext : CassandraContext
     {
-        public RepositoryContext (string[] contactPoints) : base(contactPoints)
+        public RepositoryContext(string connectionString) : base(connectionString)
         {
             GetSession().UserDefinedTypes
                 .Define(

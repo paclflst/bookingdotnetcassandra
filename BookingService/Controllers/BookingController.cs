@@ -14,6 +14,7 @@ using Guest = BookingService.Model.Guest;
 using Room = BookingService.Model.Room;
 using RoomBookingByHotel = BookingService.Model.RoomBookingByHotel;
 using RoomBookingByGuest = BookingService.Model.RoomBookingByGuest;
+using System.Configuration;
 
 namespace BookingService.Controllers
 {
@@ -28,7 +29,7 @@ namespace BookingService.Controllers
             {
                 if (dao == null)
                 {
-                    dao = new RepositoryContext(new string[1] { "localhost" });
+                    dao = new RepositoryContext(ConfigurationManager.ConnectionStrings["CassandraConnString"].ConnectionString);
                 }
                 return dao;
             }
